@@ -5,13 +5,16 @@ const axios = require('axios');
 const jwt = require('jsonwebtoken');
 const cors = require('cors')
 
+const dotenv = require('dotenv');
+dotenv.config();
+
 // Constants
 const PORT = 8080;
 const HOST = '0.0.0.0';
 
-const clientID = '4f7a518f8ff6d9afa025';
-const clientSecret = 'c19036a51a44f03a22febc327b80ca78c14cbc1c';
-const jwtSecret = '2tfy$Dr439XnD9fR';
+const clientID = process.env.GITHUB_APP_CLIENT_ID;
+const clientSecret = process.env.GITHUB_APP_CLIENT_SECRET;
+const jwtSecret = process.env.SHARKY_JWT_SECRET;
 
 // App
 const app = express();
@@ -45,10 +48,10 @@ app.get('/ping', (req, res) => {
 });
 
 app.get('/login', (req, res) => {
-  if(req.query.code) {
+  if (req.query.code) {
     axios
       .post(
-        'https://cors-anywhere.herokuapp.com/https://github.com/login/oauth/access_token',
+        'https://github.com/login/oauth/access_token',
         {
           client_id: clientID,
           client_secret: clientSecret,
@@ -69,9 +72,14 @@ app.get('/login', (req, res) => {
       .then(accessToken => axios.get('https://api.github.com/user?access_token=' + accessToken))
       .then(userInfo => {
         console.log(userInfo.data.email);
-        res.send({ token: jwt.sign({ email: userInfo.data.email }, jwtSecret), email: userInfo.data.email});
+        res.send({
+          token: jwt.sign({ email: userInfo.data.email }, jwtSecret),
+          email: userInfo.data.email
+        });
       })
-      .catch();
+      .catch((err) => {
+        console.log(err);
+      });
   }
 })
 
