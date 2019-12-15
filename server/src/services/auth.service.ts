@@ -1,24 +1,14 @@
-const clientID = process.env.GITHUB_APP_CLIENT_ID as string;
-const clientSecret = process.env.GITHUB_APP_CLIENT_SECRET as string;
-const jwtSecret = process.env.SHARKY_JWT_SECRET as string;
-
-import axios from 'axios';
 import jwt from 'jsonwebtoken';
-
-export interface AuthInfo {
-    token: string;
-    email: string;
-    name: string;
-}
+import axios from 'axios';
 
 class AuthService {
-    getEmailFromGithub(code: string): Promise<AuthInfo> {
+    getEmailFromGithub(code: string): Promise<string> {
         return axios
             .post(
                 'https://github.com/login/oauth/access_token',
                 {
-                    client_id: clientID,
-                    client_secret: clientSecret,
+                    client_id: process.env.GITHUB_APP_CLIENT_ID as string,
+                    client_secret: process.env.GITHUB_APP_CLIENT_SECRET as string,
                     code: code,
                     accept: 'json'
                 },
@@ -34,14 +24,11 @@ class AuthService {
                 }
             })
             .then(accessToken => axios.get('https://api.github.com/user?access_token=' + accessToken))
-            .then(userInfo => {
-                console.log(userInfo.data.email);
-                return {
-                    token: jwt.sign({ email: userInfo.data.email }, jwtSecret),
-                    email: userInfo.data.email,
-                    name: userInfo.data.email.split('@').shift()
-                };
-            })
+            .then(userInfo => userInfo.data.email)
+    }
+
+    getAuthToken(payload: Object) {
+        return jwt.sign(payload, process.env.SHARKY_JWT_SECRET as string);
     }
 }
 
