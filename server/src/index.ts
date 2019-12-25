@@ -6,14 +6,16 @@ import express from 'express';
 import cors from 'cors';
 import dotenv from 'dotenv';
 import mongoose from 'mongoose';
+import bodyParser from 'body-parser';
+
+import loginController from './controllers/login.controller';
+import userController from './controllers/user.controller';
 
 dotenv.config();
 
 // Constants
 const PORT = 8080;
 const HOST = '0.0.0.0';
-
-const loginController = require('./controllers/login.controller');
 
 mongoose.connect(process.env.DB_URL as string, {
   useNewUrlParser: true,
@@ -48,11 +50,15 @@ mongoose.connect(process.env.DB_URL as string, {
 
     app.use(cors());
 
+    app.use(bodyParser.urlencoded({ extended: false }));
+    app.use(bodyParser.json());
+
     app.get('/ping', (req: Request, res: Response) => {
       res.send('OK\n');
     });
 
     app.use('/login', loginController);
+    app.use('/user', userController);
 
     app.get('*', (req: Request, res: Response) => {
       res.send('Hello, world!\n');

@@ -8,12 +8,14 @@
     "build:live": "nodemon --watch 'src/**/*.ts' --exec 'ts-node' src/index.ts"
   },
   "dependencies": {
+    "@types/uuidv4": "^5.0.0",
     "axios": "^0.19.0",
     "cors": "^2.8.5",
     "dotenv": "^8.2.0",
     "express": "^4.16.1",
     "jsonwebtoken": "^8.5.1",
-    "mongoose": "^5.8.1"
+    "mongoose": "^5.8.1",
+    "uuidv4": "^6.0.0"
   },
   "devDependencies": {
     "@types/axios": "^0.14.0",
