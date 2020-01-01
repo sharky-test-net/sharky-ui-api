@@ -1,6 +1,13 @@
 import mongoose from 'mongoose';
+import { uuid } from 'uuidv4';
 
 const Schema = mongoose.Schema;
+
+export interface IUser extends mongoose.Document {
+    name: string;
+    email: string;
+    hardwareToken: string;
+}
 
 const UsersSchema = new Schema({
     name: {
@@ -12,7 +19,11 @@ const UsersSchema = new Schema({
         type: String,
         required: true,
         unique: true,
+    },
+    hardwareToken: {
+        type: String,
+        default: uuid()
     }
 });
 
-module.exports = mongoose.model('User', UsersSchema);
+export default mongoose.model<IUser>('User', UsersSchema);
