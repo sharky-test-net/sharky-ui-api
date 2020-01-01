@@ -10,6 +10,7 @@ import bodyParser from 'body-parser';
 
 import loginController from './controllers/login.controller';
 import userController from './controllers/user.controller';
+import authMiddleware from './middlewares/auth.middleware';
 
 dotenv.config();
 
@@ -58,6 +59,9 @@ mongoose.connect(process.env.DB_URL as string, {
     });
 
     app.use('/login', loginController);
+
+    app.use(authMiddleware);
+
     app.use('/user', userController);
 
     app.get('*', (req: Request, res: Response) => {
